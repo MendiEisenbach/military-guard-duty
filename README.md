@@ -1,98 +1,140 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🛡️ Military Guard Duty System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A full-featured **Guard Duty Management System** built with **NestJS**, designed for army bases.  
+It allows commanders to create shifts, assign soldiers, and enables soldiers to view their own assignments.  
+The system includes **JWT authentication**, **role-based access**, and **MySQL persistence** with **TypeORM**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📁 Project Structure
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+```plaintext
+military-guard-duty/
+├── src/
+│   ├── auth/           # Login, registration, JWT
+│   ├── users/          # User logic and roles
+│   ├── shifts/         # Guard shifts
+│   ├── assignments/    # Assignments of soldiers to shifts
+│   └── common/         # Role decorators and guards
+├── .env                # Environment variables
+├── package.json        # Project dependencies and scripts
+└── README.md           # System documentation
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## 🧠 Features
 
-# watch mode
-$ npm run start:dev
+- Secure registration and login with hashed passwords (`bcrypt`)
+- JWT token generation with embedded `role` and `user ID`
+- Shift creation restricted to `commander` role
+- Soldiers can view only their own assignments
+- Role-based access using custom `@Roles` decorator and guards
+- All data is stored in **MySQL** using **TypeORM**
+- Environment configuration via `.env`
 
-# production mode
-$ npm run start:prod
+---
+
+## 🧭 Flow Diagram
+
+```plaintext
+[Client] 
+   ↓ 
+[HTTP Request: login / register / shifts / assignments] 
+   ↓
+[Controllers] → [Services] → [Guards / Roles] → [MySQL DB via TypeORM]
 ```
 
-## Run tests
+---
+
+## 🗂️ Database Entities
+
+| Entity       | Main Fields                                      |
+|--------------|--------------------------------------------------|
+| **User**     | `id`, `name`, `email`, `password`, `role`        |
+| **Shift**    | `id`, `startTime`, `endTime`, `location`         |
+| **Assignment** | `id`, `userId`, `shiftId`                      |
+
+---
+
+## ⚙️ Installation & Running
+
+1. Start your MySQL server (e.g., via **XAMPP**)
+2. Create a database named according to your `.env` (e.g., `military_guard`)
+3. Install dependencies:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+4. Run the server in dev mode:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## 📄 Sample `.env` file
 
-Check out a few resources that may come in handy when working with NestJS:
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=
+DB_NAME=military_guard
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+JWT_SECRET=superSecretJwtKey
+JWT_EXPIRES=3600s
+```
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 🔐 Example Usage with `curl`
 
-## Stay in touch
+```bash
+# Register a new soldier
+curl -X POST http://localhost:3000/auth/register \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "Dan Soldier",
+  "email": "dan@example.com",
+  "password": "123456",
+  "role": "soldier"
+}'
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Login to get JWT token
+curl -X POST http://localhost:3000/auth/login \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "dan@example.com",
+  "password": "123456"
+}'
 
-## License
+# Create a shift (commander only)
+curl -X POST http://localhost:3000/shifts \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer <ACCESS_TOKEN>" \
+-d '{
+  "startTime": "08:00",
+  "endTime": "12:00",
+  "location": "Gate A"
+}'
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+# Assign a soldier to a shift
+curl -X POST http://localhost:3000/assignments \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer <ACCESS_TOKEN>" \
+-d '{
+  "userId": 2,
+  "shiftId": 1
+}'
+```
+
+## 📌 Notes
+
+- Written in **TypeScript**, using a modular **NestJS** structure.
+- Can be extended easily to support presence tracking, shift changes, alerts, etc.
+- Designed with clarity, separation of concerns, and security in mind.
+
+---
