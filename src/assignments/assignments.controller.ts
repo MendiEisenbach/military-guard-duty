@@ -9,6 +9,9 @@ import { Roles } from '../common/decorators/roles.decorator';
 export class AssignmentsController {
   constructor(private readonly assignmentsService: AssignmentsService) {}
 
+
+  //להוסיף גט לדרגה
+  
   @Post()
   @Roles('commander')
   assign(@Body() body: { userId: number; shiftId: number }) {
