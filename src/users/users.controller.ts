@@ -1,4 +1,4 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Request, UseGuards, NotFoundException } from '@nestjs/common';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -12,12 +12,20 @@ export class UsersController {
   @Get('me')
   @Roles('soldier', 'commander')
   async getProfile(@Request() req) {
-    return this.usersService.findOneById(req.user.userId);
+    const user = await this.usersService.findOneById(req.user.userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 
   @Get()
   @Roles('commander')
   async getAllUsers() {
-    return this.usersService.findAll();
+    const users = await this.usersService.findAll();
+    if (!users || users.length === 0) {
+      throw new NotFoundException('No users found');
+    }
+    return users;
   }
 }

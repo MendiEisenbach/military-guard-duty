@@ -18,10 +18,13 @@ export class AssignmentsService {
 
   async assignUserToShift(userId: number, shiftId: number) {
     const user = await this.userRepo.findOne({ where: { id: userId } });
-    const shift = await this.shiftRepo.findOne({ where: { id: shiftId } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
 
-    if (!user || !shift) {
-      throw new NotFoundException('User or Shift not found');
+    const shift = await this.shiftRepo.findOne({ where: { id: shiftId } });
+    if (!shift) {
+      throw new NotFoundException(`Shift with ID ${shiftId} not found`);
     }
 
     const assignment = this.assignmentRepo.create({ user, shift });
@@ -29,6 +32,11 @@ export class AssignmentsService {
   }
 
   async getAssignmentsForUser(userId: number) {
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
     return this.assignmentRepo.find({
       where: { user: { id: userId } },
       relations: ['shift'],

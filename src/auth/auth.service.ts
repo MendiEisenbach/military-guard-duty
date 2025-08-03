@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,20 +17,20 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const existing = await this.userRepo.findOne({ where: { email: dto.email } });
-    if (existing) throw new Error('User already exists');
+    if (existing) throw new BadRequestException('A user with this email already exists');
 
     const hashed = await bcrypt.hash(dto.password, 10);
     const user = this.userRepo.create({ ...dto, password: hashed });
     await this.userRepo.save(user);
-    return { message: 'User registered' };
+    return { message: 'User registered successfully' };
   }
 
   async login(dto: LoginDto) {
     const user = await this.userRepo.findOne({ where: { email: dto.email } });
-    if (!user) return null;
+    if (!user) throw new UnauthorizedException('Invalid email or password');
 
     const valid = await bcrypt.compare(dto.password, user.password);
-    if (!valid) return null;
+    if (!valid) throw new UnauthorizedException('Invalid email or password');
 
     const payload = { sub: user.id, role: user.role };
     return {

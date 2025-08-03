@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, UseGuards, BadRequestException, NotFoundException } from '@nestjs/common';
 import { ShiftsService } from './shifts.service';
 import { Shift } from './shift.entity';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -12,13 +12,20 @@ export class ShiftsController {
 
   @Post()
   @Roles('commander')
-  create(@Body() shift: Partial<Shift>) {
+  async create(@Body() shift: Partial<Shift>) {
+    if (!shift.startTime || !shift.endTime || !shift.location) {
+      throw new BadRequestException('Missing required fields: startTime, endTime, and location are all required.');
+    }
     return this.shiftsService.create(shift);
   }
 
   @Get()
   @Roles('commander', 'soldier')
-  findAll() {
-    return this.shiftsService.findAll();
+  async findAll() {
+    const shifts = await this.shiftsService.findAll();
+    if (!shifts || shifts.length === 0) {
+      throw new NotFoundException('No shifts found');
+    }
+    return shifts;
   }
 }
